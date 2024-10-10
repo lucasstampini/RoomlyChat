@@ -39,6 +39,8 @@ public class Controller implements Initializable {
     private VBox vbox_messages;
     @FXML
     private ScrollPane sp_main;
+    @FXML
+    private Label typingStatusLabel;  // Label para exibir a mensagem de "está digitando..."
 
     private Client client; // Instância da classe Client para interagir com o servidor
 
@@ -83,11 +85,21 @@ public class Controller implements Initializable {
 
                     client.sendMessageToServer(messageToSend); // envia a mensagem para o servidor
                     tf_message.clear(); // limpa o campo de entrada de mensagens após o envio
+                    client.sendTypingStatus(false);  // Envia sinal de que parou de digitar
                 }
             }
         });
 
-            // Botão para enviar uma imagem
+        // Detecta quando o cliente começa a digitar
+        tf_message.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.isEmpty()) {
+                client.sendTypingStatus(true);  // Envia sinal de que está digitando
+            } else {
+                client.sendTypingStatus(false);  // Envia sinal de que parou de digitar
+            }
+        });
+
+        // Botão para enviar uma imagem
         Button button_sendImage = new Button("Enviar Imagem");
         button_sendImage.setOnAction(event -> {
             FileChooser fileChooser = new FileChooser();

@@ -99,7 +99,18 @@ public class Server {
                 while(socket.isConnected()) { // enquanto o socket estiver conectado, continua a receber mensagens
                     try{
                         String messageFromClient = "Cliente: " + bufferedReader.readLine(); // lê uma linha do cliente e adiciona o prefixo "CLiente: "
+
+                        if ("TYPING".equals(messageType)) {
+                            // Envia sinal para o cliente indicando que o outro cliente está digitando
+                            sendTypingStatusToClient(true);
+                        } else if ("NOT_TYPING".equals(messageType)) {
+                            sendTypingStatusToClient(false);
+                        } else if ("IMAGE".equals(messageType)) {
+                            // Lida com recebimento de imagens
+                            receiveImageFromClient();
+                        } else {
                         Controller.addLabel(messageFromClient, vBox); // adiciona a mensagem na interface usando o metodo addLAbel do Controller
+                        }
                     }catch (IOException e) {
                         e.printStackTrace();
                         System.out.println("Erro ao receber mensagem do cliente.");
@@ -109,6 +120,20 @@ public class Server {
                 }
             }
         }).start(); // inicia a thread para executar o metodo run
+    }
+
+    public void sendTypingStatusToClient(boolean isTyping) {
+        try {
+            if (isTyping) {
+                bufferedWriter.write("OTHER_TYPING");  // Sinal para indicar que o cliente está digitando
+            } else {
+                bufferedWriter.write("OTHER_NOT_TYPING");  // Sinal para indicar que parou de digitar
+            }
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) { // metodo para fechar recursos

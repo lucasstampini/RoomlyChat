@@ -40,6 +40,21 @@ public class Client { // declarando a classe Client, que será responsável pela
         }
     }
 
+    public void sendTypingStatus(boolean isTyping) {
+        try {
+            if (isTyping) {
+                bufferedWriter.write("TYPING");  // Indica que o cliente está digitando
+            } else {
+                bufferedWriter.write("NOT_TYPING");  // Indica que o cliente parou de digitar
+            }
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+
     // Método para enviar imagens
     public void sendImageToServer(File imageFile) {
         try {
