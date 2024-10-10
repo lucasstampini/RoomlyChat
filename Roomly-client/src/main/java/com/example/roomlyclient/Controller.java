@@ -35,13 +35,14 @@ public class Controller implements Initializable {
     @FXML
     private ScrollPane sp_main;
 
-    private Client client;
+    private Client client; // Instância da classe Client para interagir com o servidor
 
+    // inicializa a interface do usuário e estabelece uma conexão com um servidor
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
-            client = new Client(new Socket("localhost", 1234));
-            System.out.println("Conectado ao servidor.");
+            client = new Client(new Socket("localhost", 1234)); // cria um novo cliente e conecta ao servidor na porta 1234
+            System.out.println("Conectado ao servidor."); // mensagem de sucesso
         } catch (IOException e) {
             e.printStackTrace();
         }
