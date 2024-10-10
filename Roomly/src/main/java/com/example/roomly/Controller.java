@@ -1,4 +1,4 @@
-package com.example.roomly;
+package com.example.roomly; // Define o pacote onde essa classe está localizada
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
