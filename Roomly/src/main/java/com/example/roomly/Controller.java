@@ -20,6 +20,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.FileChooser;
+import java.io.File;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 // Bibliotecas para comunicação
 import java.io.IOException;
@@ -87,6 +91,20 @@ public class Controller implements Initializable { // Declara a classe Controlle
                 }
             }
         });
+
+        // Método auxiliar para adicionar uma imagem ao VBox
+        public void addImageToVBox(File imageFile) {
+            Image image = new Image(imageFile.toURI().toString());
+            ImageView imageView = new ImageView(image);
+            imageView.setFitWidth(200);  // Ajusta o tamanho da imagem, se necessário
+            imageView.setPreserveRatio(true);
+
+            HBox hBox = new HBox(imageView);
+            hBox.setAlignment(Pos.CENTER_LEFT);
+            hBox.setPadding(new Insets(5, 5, 5, 10));
+
+            Platform.runLater(() -> vbox_messages.getChildren().add(hBox));
+        }
     }
     // Este método Java, `addLabel`, adiciona uma mensagem de texto estilizada a uma caixa vertical (`VBox`) em um aplicativo JavaFX. A mensagem é recebida de um cliente e exibida com um fundo cinza claro e cantos arredondados. A adição da mensagem à `VBox` é feita na thread do aplicativo JavaFX usando `Platform.runLater`.
     public static void addLabel(String messageFromClient, VBox vBox){

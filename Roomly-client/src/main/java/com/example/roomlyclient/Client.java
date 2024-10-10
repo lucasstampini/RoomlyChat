@@ -4,6 +4,9 @@ import javafx.scene.layout.VBox;
 
 import java.io.*;
 import java.net.Socket;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
 
 public class Client { // declarando a classe Client, que será responsável pela comunicação de rede com o servidor
 
@@ -33,6 +36,45 @@ public class Client { // declarando a classe Client, que será responsável pela
         }catch (IOException e) {
             e.printStackTrace();
             System.out.println("Erro ao enviar mensagem ao servidor.");
+            closeEverything(socket, bufferedReader, bufferedWriter);
+        }
+    }
+
+    // Método para enviar imagens
+    public void sendImageToServer(File imageFile) {
+        try {
+            // Informa ao servidor que uma imagem será enviada
+            bufferedWriter.write("IMAGE");
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+
+            // Envia o nome do arquivo para o servidor
+            bufferedWriter.write(imageFile.getName());
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+
+            // Envia o tamanho do arquivo
+            bufferedWriter.write(String.valueOf(imageFile.length()));
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+
+            // Envia o arquivo
+            FileInputStream fileInputStream = new FileInputStream(imageFile);
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            OutputStream outputStream = socket.getOutputStream();
+
+            while ((bytesRead = fileInputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            outputStream.flush();
+            fileInputStream.close();
+
+            System.out.println("Imagem enviada com sucesso.");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Erro ao enviar imagem para o servidor.");
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
     }

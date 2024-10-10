@@ -7,6 +7,9 @@ import javafx.scene.layout.VBox; // Importa a classe VBox do JavaFX, que será u
 import java.io.*; // Importa classes para manipulação e saída de dados
 import java.net.ServerSocket; // Importa a classe ServerSocket para criar o servidor
 import java.net.Socket; // Importa a classe Socket para gerenciar a comunicação entre cliente e servidor
+import java.io.File; // Importa a classe File para manipular arquivos
+import java.io.FileInputStream; // Importa a classe FileInputStream para ler arquivos
+import java.io.OutputStream; // Importa a classe OutputStream para escrever arquivos
 
 public class Server {
 
@@ -39,6 +42,55 @@ public class Server {
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
     }
+
+
+    public void receiveImageFromClient() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    File directory = new File("Roomly/server_images");
+                    if (!directory.exists()) {
+                        directory.mkdir();  // Cria o diretório se ele não existir
+                    }
+                    while (socket.isConnected()) {
+                        String messageType = bufferedReader.readLine();  // Lê o tipo de mensagem
+                        if ("IMAGE".equals(messageType)) {  // Se for uma imagem
+                            String fileName = bufferedReader.readLine();  // Lê o nome do arquivo
+                            long fileSize = Long.parseLong(bufferedReader.readLine());  // Lê o tamanho do arquivo
+
+                            // Define o caminho onde a imagem será salva
+                            File file = new File("server_images/" + fileName);
+                            FileOutputStream fileOutputStream = new FileOutputStream(file);
+
+                            // Recebe o arquivo em pacotes de 4096 bytes
+                            byte[] buffer = new byte[4096];
+                            int bytesRead;
+                            long totalBytesRead = 0;
+
+                            InputStream inputStream = socket.getInputStream();
+                            while (totalBytesRead < fileSize && (bytesRead = inputStream.read(buffer)) > 0) {
+                                fileOutputStream.write(buffer, 0, bytesRead);
+                                totalBytesRead += bytesRead;
+                            }
+
+                            fileOutputStream.close();
+                            System.out.println("Imagem recebida: " + file.getAbsolutePath());
+                        } else {
+                            // Lidar com outras mensagens, como mensagens de texto
+                            String messageFromClient = messageType;
+                            Controller.addLabel("Cliente: " + messageFromClient, null);
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    System.out.println("Erro ao receber imagem do cliente.");
+                    closeEverything(socket, bufferedReader, bufferedWriter);
+                }
+            }
+        }).start();
+    }
+
 
     public void receiveMessageFromClient(VBox vBox) { // metodo para RECEBER mensagens do cliente
         new Thread(new Runnable() { // cria uma nova thread para receber mensagens de forma assincrona
