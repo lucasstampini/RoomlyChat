@@ -1,6 +1,6 @@
 module com.example.roomlyclient {
-    requires javafx.controls;
-    requires javafx.fxml;
+    requires transitive javafx.controls; // Mudando para transitive por problemas no VS Code
+    requires transitive javafx.fxml;
 
 
     opens com.example.roomlyclient to javafx.fxml;

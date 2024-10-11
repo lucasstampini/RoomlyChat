@@ -1,3 +1,6 @@
+// Inicializa a interface gráfica da aplicação usando JavaFX, carregando o layout a partir de um arquivo FXML e
+// exibindo-o em uma nova janela.
+
 package com.example.roomlyclient;
 
 import javafx.application.Application;
