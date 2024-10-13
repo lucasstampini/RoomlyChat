@@ -23,17 +23,52 @@ public class Client {
         }
     }
 
+    // Envio de mensagens de texto
     public void sendMessageToServer(String messageToServer) {
-        try{
+        try {
+            // Enviar cabeçalho indicando que é uma mensagem de texto
+            bufferedWriter.write("TEXT");
+            bufferedWriter.newLine();
             bufferedWriter.write(messageToServer);
             bufferedWriter.newLine();
             bufferedWriter.flush();
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Erro ao enviar mensagem ao servidor.");
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
     }
+
+    // Envio de arquivos
+    public void sendFileToServer(File file) {
+        try {
+            // Enviar cabeçalho indicando que é um arquivo
+            bufferedWriter.write("FILE");
+            bufferedWriter.newLine();
+            bufferedWriter.write(file.getName()); // Nome do arquivo
+            bufferedWriter.newLine();
+            bufferedWriter.write(String.valueOf(file.length())); // Tamanho do arquivo
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+
+            // Enviar o arquivo em si
+            FileInputStream fis = new FileInputStream(file);
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
+            OutputStream outputStream = socket.getOutputStream();
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            outputStream.flush();
+            fis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Erro ao enviar arquivo ao servidor.");
+            closeEverything(socket, bufferedReader, bufferedWriter);
+        }
+    }
+
 
     public void receiveMessageFromServer(VBox vBox) {
         new Thread(new Runnable() {
